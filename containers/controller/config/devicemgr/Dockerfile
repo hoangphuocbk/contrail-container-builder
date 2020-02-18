@@ -8,11 +8,16 @@ LABEL name=$CONTAINER_NAME \
       summary="Contrail Device Manager" \
       description="Contrail Device Manager is used to manage network devices in the Contrail system."
 
+RUN pip install --upgrade setuptools
+
 # git rpm cannot be remove as it removes contrail-utils, and common by deps
-RUN pip install --no-compile "inflection>=0.3.1" "jxmlease>=1.0.1" "ncclient==0.6.3" "junos-eznc>=2.1.7,<=2.2.0" "timeout_decorator>=0.4.0" "python-jsonschema-objects>=0.3.3" "jsnapy>=1.3.2" "ansible==2.6.13" && \
+RUN pip install --no-compile "inflection>=0.3.1" "jxmlease>=1.0.1" "ncclient==0.6.3" "junos-eznc>=2.1.7,<=2.2.0" "timeout_decorator>=0.4.0" "python-jsonschema-objects>=0.3.3" "jsnapy>=1.3.2" "ansible==2.6.13" "pyhpecw7==0.0.11" && \
     yum install -y git iputils && \
     ansible-galaxy install git+https://github.com/Juniper/ansible-junos-stdlib.git,,Juniper.junos && \
+    git clone ssh://git@10.240.203.2:8122/sdn/ansible-hpe-cw7.git /ansible-hpe-cw7 && \
+    echo "library = /ansible-hpe-cw7" >> /etc/ansible/ansible.cfg && \
     yum clean all -y && \
+    chown -R $CONTRAIL_USER:$CONTRAIL_USER /opt/contrail && \
     rm -rf /var/cache/yum
 
 COPY *.sh /
