@@ -17,13 +17,12 @@ RUN pip install --no-compile "inflection>=0.3.1" "jxmlease>=1.0.1" "ncclient==0.
     git clone https://github.com/hoangphuocbk/ansible-hpe-cw7.git /ansible-hpe-cw7 && \
     echo "library = /ansible-hpe-cw7" >> /etc/ansible/ansible.cfg && \
     yum clean all -y && \
-    rm -rf /var/cache/yum
+    rm -rf /var/cache/yum && \
+    chown -R $CONTRAIL_USER:$CONTRAIL_USER /opt/contrail/
 
 COPY *.sh /
 
 ENTRYPOINT ["/entrypoint.sh"]
-
-RUN chown -R $CONTRAIL_UID:$CONTRAIL_GID /opt/contrail/
 
 CMD ["/usr/bin/contrail-device-manager", "--conf_file", "/etc/contrail/contrail-device-manager.conf", "--conf_file", "/etc/contrail/contrail-keystone-auth.conf"]
 
